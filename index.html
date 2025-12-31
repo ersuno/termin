@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movedirect Umzugsliste</title>
+    <style>
+        /* --- CSS Styles (Based on Sample) --- */
+        
+        :root {
+            --bg-dark: #0b0c15;
+            --card-bg: rgba(30, 30, 45, 0.7);
+            --input-bg: #2d1b4e;
+            --input-text: #e0e0e0;
+            --primary-gradient: linear-gradient(90deg, #6366f1, #a855f7);
+            --heading-color: #8b5cf6;
+            --text-muted: #9ca3af;
+            --border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(100, 0, 120, 0.4) 0%, transparent 60%),
+                radial-gradient(circle at 90% 80%, rgba(20, 0, 255, 0.3) 0%, transparent 60%);
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 900px; /* Wider for 2 columns */
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--heading-color);
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        /* Form Layout */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #d1d5db;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: var(--input-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            color: var(--input-text);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            appearance: none; /* Removes default arrow for cleaner look */
+        }
+        
+        /* Custom Arrow for Selects */
+        .select-wrapper {
+            position: relative;
+        }
+        .select-wrapper::after {
+            content: '▼';
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* Two Column Layout */
+        .split-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 20px;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px 0;
+        }
+
+        .column-header {
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #6366f1;
+            margin-bottom: 15px;
+            font-weight: bold;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        /* Flex row for the specific "Aufzug" requirements */
+        .multi-input-row {
+            display: flex;
+            gap: 10px;
+        }
+        .multi-input-row .select-wrapper {
+            flex: 1;
+        }
+        
+        /* Button */
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 10px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .split-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Umzugsdetails erfassen</h1>
+
+        <form id="moveForm">
+            <!-- Customer Name -->
+            <div class="form-group">
+                <label for="customerName">Name Kunde</label>
+                <input type="text" id="customerName" placeholder="Vorname Nachname" required>
+            </div>
+
+            <!-- Split Section -->
+            <div class="split-container">
+                
+                <!-- Left: AUSZUG -->
+                <div class="column">
+                    <div class="column-header">Auszug</div>
+
+                    <!-- Stockwerk (0-10) -->
+                    <div class="form-group">
+                        <label>Stockwerk</label>
+                        <div class="select-wrapper">
+                            <select id="az_stockwerk">
+                                <option value="" disabled selected>Bitte wählen</option>
+                                <script>
+                                    for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}. Etage</option>`);
+                                </script>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Trageweg (Ranges) -->
+                    <div class="form-group">
+                        <label>Trageweg</label>
+                        <div class="select-wrapper">
+                            <select id="az_trageweg">
+                                <option value="0-10 m">0-10 m</option>
+                                <option value="10-20 m">10-20 m</option>
+                                <option value="20-30 m">20-30 m</option>
+                                <option value="30-40 m">30-40 m</option>
+                                <option value="40-50 m">40-50 m</option>
+                                <option value="50-60 m">50-60 m</option>
+                                <option value="60-70 m">60-70 m</option>
+                                <option value="70-80 m">70-80 m</option>
+                                <option value="80-90 m">80-90 m</option>
+                                <option value="90-100 m">90-100 m</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Aufzug (Yes/No + 0-10 + 0-10) -->
+                    <div class="form-group">
+                        <label>Aufzug (Vorhanden? | Kapazität | Tiefe)</label>
+                        <div class="multi-input-row">
+                            <div class="select-wrapper">
+                                <select id="az_aufzug_yn">
+                                    <option value="Nein">Nein</option>
+                                    <option value="Ja">Ja</option>
+                                </select>
+                            </div>
+                            <div class="select-wrapper">
+                                <select id="az_aufzug_cap">
+                                    <option value="" disabled selected>0-10</option>
+                                    <script>for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}</option>`);</script>
+                                </select>
+                            </div>
+                            <div class="select-wrapper">
+                                <select id="az_aufzug_size">
+                                    <option value="" disabled selected>0-10</option>
+                                    <script>for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}</option>`);</script>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Halteverbotszone -->
+                    <div class="form-group">
+                        <label>Halteverbotszone</label>
+                        <div class="select-wrapper">
+                            <select id="az_hvz">
+                                <option value="Nein">Nein</option>
+                                <option value="Ja">Ja</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Aussenlift -->
+                    <div class="form-group">
+                        <label>Aussenlift</label>
+                        <div class="select-wrapper">
+                            <select id="az_aussenlift">
+                                <option value="Nein">Nein</option>
+                                <option value="Ja">Ja</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: EINZUG -->
+                <div class="column">
+                    <div class="column-header">Einzug</div>
+
+                    <!-- Stockwerk (0-10) -->
+                    <div class="form-group">
+                        <label>Stockwerk</label>
+                        <div class="select-wrapper">
+                            <select id="ez_stockwerk">
+                                <option value="" disabled selected>Bitte wählen</option>
+                                <script>
+                                    for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}. Etage</option>`);
+                                </script>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Trageweg (Ranges) -->
+                    <div class="form-group">
+                        <label>Trageweg</label>
+                        <div class="select-wrapper">
+                            <select id="ez_trageweg">
+                                <option value="0-10 m">0-10 m</option>
+                                <option value="10-20 m">10-20 m</option>
+                                <option value="20-30 m">20-30 m</option>
+                                <option value="30-40 m">30-40 m</option>
+                                <option value="40-50 m">40-50 m</option>
+                                <option value="50-60 m">50-60 m</option>
+                                <option value="60-70 m">60-70 m</option>
+                                <option value="70-80 m">70-80 m</option>
+                                <option value="80-90 m">80-90 m</option>
+                                <option value="90-100 m">90-100 m</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Aufzug (Yes/No + 0-10) -->
+                    <div class="form-group">
+                        <label>Aufzug (Vorhanden? | Kapazität)</label>
+                        <div class="multi-input-row">
+                            <div class="select-wrapper">
+                                <select id="ez_aufzug_yn">
+                                    <option value="Nein">Nein</option>
+                                    <option value="Ja">Ja</option>
+                                </select>
+                            </div>
+                            <div class="select-wrapper">
+                                <select id="ez_aufzug_cap">
+                                    <option value="" disabled selected>0-10</option>
+                                    <script>for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}</option>`);</script>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Halteverbotszone -->
+                    <div class="form-group">
+                        <label>Halteverbotszone</label>
+                        <div class="select-wrapper">
+                            <select id="ez_hvz">
+                                <option value="Nein">Nein</option>
+                                <option value="Ja">Ja</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Aussenlift -->
+                    <div class="form-group">
+                        <label>Aussenlift</label>
+                        <div class="select-wrapper">
+                            <select id="ez_aussenlift">
+                                <option value="Nein">Nein</option>
+                                <option value="Ja">Ja</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="form-group">
+                <label for="description">Beschreibung</label>
+                <textarea id="description" placeholder="Weitere Details zum Umzug, Besonderheiten, Möbel, etc..."></textarea>
+            </div>
+
+            <!-- Download Button -->
+            <button type="submit" id="downloadBtn">
+                Download .txt 
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 15V3M12 15L8 11M12 15L16 11M2 17L2.62 19.48C2.84 20.36 3.06 20.8 3.52 21.15C3.98 21.5 4.54 21.5 5.66 21.5H18.34C19.46 21.5 20.02 21.5 20.48 21.15C20.94 20.8 21.16 20.36 21.38 19.48L22 17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('moveForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // 1. Gather Data
+            const customer = document.getElementById('customerName').value;
+            const desc = document.getElementById('description').value;
+
+            // Helper to get value securely
+            const getVal = (id) => {
+                const el = document.getElementById(id);
+                return el ? el.value : '-';
+            };
+
+            // Auszug Data
+            const az_st = getVal('az_stockwerk');
+            const az_tw = getVal('az_trageweg');
+            const az_auf_yn = getVal('az_aufzug_yn');
+            const az_auf_cap = getVal('az_aufzug_cap');
+            const az_auf_sz = getVal('az_aufzug_size');
+            const az_hvz = getVal('az_hvz');
+            const az_al = getVal('az_aussenlift');
+
+            // Einzug Data
+            const ez_st = getVal('ez_stockwerk');
+            const ez_tw = getVal('ez_trageweg');
+            const ez_auf_yn = getVal('ez_aufzug_yn');
+            const ez_auf_cap = getVal('ez_aufzug_cap');
+            const ez_hvz = getVal('ez_hvz');
+            const ez_al = getVal('ez_aussenlift');
+
+            // 2. Format Text File
+            const textContent = 
+`KUNDE: ${customer}
+==========================================
+AUSZUG (Start)
+==========================================
+Stockwerk:        ${az_st}. Etage
+Trageweg:         ${az_tw}
+Aufzug:           ${az_auf_yn} (Größe: ${az_auf_cap}, Tiefe: ${az_auf_sz})
+Halteverbotszone: ${az_hvz}
+Aussenlift:       ${az_al}
+
+==========================================
+EINZUG (Ziel)
+==========================================
+Stockwerk:        ${ez_st}. Etage
+Trageweg:         ${ez_tw}
+Aufzug:           ${ez_auf_yn} (Größe: ${ez_auf_cap})
+Halteverbotszone: ${ez_hvz}
+Aussenlift:       ${ez_al}
+
+==========================================
+BESCHREIBUNG
+==========================================
+${desc}
+`;
+
+            // 3. Create and Download File
+            const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
+            const safeName = (customer.trim().replace(/[^a-z0-9äöüß]/gi, '_') || 'umzug') + '.txt';
+
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', safeName);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        });
+    </script>
+</body>
+</html>
