@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movedirect Umzugsliste</title>
     <style>
-        /* --- CSS Styles (Based on Sample) --- */
+        /* --- CSS Styles --- */
         
         :root {
             --bg-dark: #0b0c15;
@@ -45,7 +45,7 @@
             border-radius: 20px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
             width: 100%;
-            max-width: 900px; /* Wider for 2 columns */
+            max-width: 900px; 
             border: 1px solid var(--border-color);
             backdrop-filter: blur(10px);
         }
@@ -58,7 +58,6 @@
             font-weight: 700;
         }
 
-        /* Form Layout */
         .form-group {
             margin-bottom: 1.2rem;
         }
@@ -83,10 +82,9 @@
             font-size: 0.95rem;
             outline: none;
             transition: border-color 0.3s, box-shadow 0.3s;
-            appearance: none; /* Removes default arrow for cleaner look */
+            appearance: none;
         }
         
-        /* Custom Arrow for Selects */
         .select-wrapper {
             position: relative;
         }
@@ -132,7 +130,7 @@
             padding-bottom: 5px;
         }
 
-        /* Flex row for the specific "Aufzug" requirements */
+        /* Flex row for Aufzug fields */
         .multi-input-row {
             display: flex;
             gap: 10px;
@@ -141,7 +139,6 @@
             flex: 1;
         }
         
-        /* Button */
         button {
             width: 100%;
             padding: 14px;
@@ -165,7 +162,6 @@
             box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
         }
 
-        /* Mobile Responsive */
         @media (max-width: 768px) {
             .split-container {
                 grid-template-columns: 1fr;
@@ -225,9 +221,9 @@
                         </div>
                     </div>
 
-                    <!-- Aufzug (Yes/No + 0-10 + 0-10) -->
+                    <!-- Aufzug (Yes/No + 0-10) - CORRECTED -->
                     <div class="form-group">
-                        <label>Aufzug (Vorhanden? | Kapazität | Tiefe)</label>
+                        <label>Aufzug (Vorhanden? | Personen)</label>
                         <div class="multi-input-row">
                             <div class="select-wrapper">
                                 <select id="az_aufzug_yn">
@@ -237,12 +233,6 @@
                             </div>
                             <div class="select-wrapper">
                                 <select id="az_aufzug_cap">
-                                    <option value="" disabled selected>0-10</option>
-                                    <script>for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}</option>`);</script>
-                                </select>
-                            </div>
-                            <div class="select-wrapper">
-                                <select id="az_aufzug_size">
                                     <option value="" disabled selected>0-10</option>
                                     <script>for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}</option>`);</script>
                                 </select>
@@ -311,7 +301,7 @@
 
                     <!-- Aufzug (Yes/No + 0-10) -->
                     <div class="form-group">
-                        <label>Aufzug (Vorhanden? | Kapazität)</label>
+                        <label>Aufzug (Vorhanden? | Personen)</label>
                         <div class="multi-input-row">
                             <div class="select-wrapper">
                                 <select id="ez_aufzug_yn">
@@ -387,7 +377,6 @@
             const az_tw = getVal('az_trageweg');
             const az_auf_yn = getVal('az_aufzug_yn');
             const az_auf_cap = getVal('az_aufzug_cap');
-            const az_auf_sz = getVal('az_aufzug_size');
             const az_hvz = getVal('az_hvz');
             const az_al = getVal('az_aussenlift');
 
@@ -407,7 +396,7 @@ AUSZUG (Start)
 ==========================================
 Stockwerk:        ${az_st}. Etage
 Trageweg:         ${az_tw}
-Aufzug:           ${az_auf_yn} (Größe: ${az_auf_cap}, Tiefe: ${az_auf_sz})
+Aufzug:           ${az_auf_yn} (Personen/Kapazität: ${az_auf_cap})
 Halteverbotszone: ${az_hvz}
 Aussenlift:       ${az_al}
 
@@ -416,7 +405,7 @@ EINZUG (Ziel)
 ==========================================
 Stockwerk:        ${ez_st}. Etage
 Trageweg:         ${ez_tw}
-Aufzug:           ${ez_auf_yn} (Größe: ${ez_auf_cap})
+Aufzug:           ${ez_auf_yn} (Personen/Kapazität: ${ez_auf_cap})
 Halteverbotszone: ${ez_hvz}
 Aussenlift:       ${ez_al}
 
