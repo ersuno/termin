@@ -221,7 +221,7 @@
                         </div>
                     </div>
 
-                    <!-- Aufzug (Yes/No + 0-10) - CORRECTED -->
+                    <!-- Aufzug (Yes/No + 0-10) -->
                     <div class="form-group">
                         <label>Aufzug (Vorhanden? | Personen)</label>
                         <div class="multi-input-row">
@@ -342,10 +342,22 @@
                 </div>
             </div>
 
+            <!-- Adressen -->
+            <div class="form-group">
+                <label for="adressen">Adressen</label>
+                <textarea id="adressen" placeholder="Beladeadresse / Entladeadresse..."></textarea>
+            </div>
+
+            <!-- Inventar -->
+            <div class="form-group">
+                <label for="inventar">Inventar</label>
+                <textarea id="inventar" placeholder="Liste der Möbelstücke..."></textarea>
+            </div>
+
             <!-- Description -->
             <div class="form-group">
                 <label for="description">Beschreibung</label>
-                <textarea id="description" placeholder="Weitere Details zum Umzug, Besonderheiten, Möbel, etc..."></textarea>
+                <textarea id="description" placeholder="Weitere Details zum Umzug, Besonderheiten..."></textarea>
             </div>
 
             <!-- Download Button -->
@@ -364,6 +376,8 @@
 
             // 1. Gather Data
             const customer = document.getElementById('customerName').value;
+            const adressen = document.getElementById('adressen').value;
+            const inventar = document.getElementById('inventar').value;
             const desc = document.getElementById('description').value;
 
             // Helper to get value securely
@@ -408,6 +422,16 @@ Trageweg:         ${ez_tw}
 Aufzug:           ${ez_auf_yn} (Personen/Kapazität: ${ez_auf_cap})
 Halteverbotszone: ${ez_hvz}
 Aussenlift:       ${ez_al}
+
+==========================================
+ADRESSEN
+==========================================
+${adressen}
+
+==========================================
+INVENTAR
+==========================================
+${inventar}
 
 ==========================================
 BESCHREIBUNG
