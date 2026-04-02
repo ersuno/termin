@@ -431,6 +431,18 @@
                 <textarea id="internalNote" placeholder="Interne Bemerkungen, Preise, Team-Infos..."></textarea>
             </div>
 
+            <!-- Organisationsvorschlag -->
+            <div class="form-group">
+                <label for="orgProposal">Organisationsvorschlag</label>
+                <textarea id="orgProposal" placeholder="Vorschlag zur Organisation des Umzugs..."></textarea>
+            </div>
+
+            <!-- Service -->
+            <div class="form-group">
+                <label for="serviceInfo">Service</label>
+                <textarea id="serviceInfo" placeholder="Zusatzleistungen, Verpackungsservice etc..."></textarea>
+            </div>
+
             <!-- Download Button -->
             <button type="submit" id="downloadBtn">
                 Download .txt 
@@ -451,6 +463,8 @@
             const inventar = document.getElementById('inventar').value;
             const desc = document.getElementById('description').value;
             const internal = document.getElementById('internalNote').value;
+            const orgProposal = document.getElementById('orgProposal').value;
+            const serviceInfo = document.getElementById('serviceInfo').value;
 
             // Helper to get value securely
             const getVal = (id) => {
@@ -514,6 +528,16 @@ ${desc}
 INTERNE NOTIZ
 ==========================================
 ${internal}
+
+==========================================
+ORGANISATIONSVORSCHLAG
+==========================================
+${orgProposal}
+
+==========================================
+SERVICE
+==========================================
+${serviceInfo}
 `;
 
             // 3. Create and Download File
