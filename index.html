@@ -246,6 +246,25 @@
                 <div class="column">
                     <div class="column-header">Auszug</div>
 
+                    <!-- NEU: Objekttyp Auszug -->
+                    <div class="form-group">
+                        <label>Objekttyp</label>
+                        <div class="select-wrapper">
+                            <select id="az_objekt">
+                                <option value="Wohnung" selected>Wohnung</option>
+                                <option value="Haus">Haus</option>
+                                <option value="Lager">Lager</option>
+                                <option value="Büro">Büro</option>
+                                <option value="Garage">Garage</option>
+                                <option value="Zweifamilienhaus">Zweifamilienhaus</option>
+                                <option value="Reihenhaus">Reihenhaus</option>
+                                <option value="WG-Zimmer">WG-Zimmer</option>
+                                <option value="Maisonette">Maisonette</option>
+                                <option value="Sonstiges">Sonstiges</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <!-- Stockwerk (0-10) -->
                     <div class="form-group">
                         <label>Stockwerk</label>
@@ -330,6 +349,25 @@
                 <!-- Right: EINZUG -->
                 <div class="column">
                     <div class="column-header">Einzug</div>
+
+                    <!-- NEU: Objekttyp Einzug -->
+                    <div class="form-group">
+                        <label>Objekttyp</label>
+                        <div class="select-wrapper">
+                            <select id="ez_objekt">
+                                <option value="Wohnung" selected>Wohnung</option>
+                                <option value="Haus">Haus</option>
+                                <option value="Lager">Lager</option>
+                                <option value="Büro">Büro</option>
+                                <option value="Garage">Garage</option>
+                                <option value="Zweifamilienhaus">Zweifamilienhaus</option>
+                                <option value="Reihenhaus">Reihenhaus</option>
+                                <option value="WG-Zimmer">WG-Zimmer</option>
+                                <option value="Maisonette">Maisonette</option>
+                                <option value="Sonstiges">Sonstiges</option>
+                            </select>
+                        </div>
+                    </div>
 
                     <!-- Stockwerk (0-10) -->
                     <div class="form-group">
@@ -457,6 +495,12 @@
         document.getElementById('moveForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
+            // Helper to get value securely
+            const getVal = (id) => {
+                const el = document.getElementById(id);
+                return el ? el.value : '-';
+            };
+
             // 1. Gather Data
             const customer = document.getElementById('customerName').value;
             const reason = document.getElementById('moveReason').value;
@@ -466,13 +510,8 @@
             const orgProposal = document.getElementById('orgProposal').value;
             const serviceInfo = document.getElementById('serviceInfo').value;
 
-            // Helper to get value securely
-            const getVal = (id) => {
-                const el = document.getElementById(id);
-                return el ? el.value : '-';
-            };
-
             // Auszug Data
+            const az_obj = getVal('az_objekt');
             const az_st = getVal('az_stockwerk');
             const az_tw = getVal('az_trageweg');
             const az_auf_yn = getVal('az_aufzug_yn');
@@ -482,6 +521,7 @@
             const az_adr = getVal('az_adresse');
 
             // Einzug Data
+            const ez_obj = getVal('ez_objekt');
             const ez_st = getVal('ez_stockwerk');
             const ez_tw = getVal('ez_trageweg');
             const ez_auf_yn = getVal('ez_aufzug_yn');
@@ -497,6 +537,7 @@ ART:   ${reason}
 ==========================================
 AUSZUG (Start)
 ==========================================
+Objekttyp:        ${az_obj}
 Adresse:          ${az_adr}
 Stockwerk:        ${az_st}. Etage
 Trageweg:         ${az_tw}
@@ -507,6 +548,7 @@ Aussenlift:       ${az_al}
 ==========================================
 EINZUG (Ziel)
 ==========================================
+Objekttyp:        ${ez_obj}
 Adresse:          ${ez_adr}
 Stockwerk:        ${ez_st}. Etage
 Trageweg:         ${ez_tw}
