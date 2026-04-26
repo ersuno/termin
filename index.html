@@ -3,505 +3,427 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movedirect Umzugsliste</title>
+    <title>Movedirect App - Umzugsliste & Rechner</title>
     
     <!-- Import Font for Logo -->
     <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
 
     <style>
-        /* --- CSS Styles --- */
+        /* --- App Navigation Styles --- */
+        #app-nav {
+            background: #1e1e24;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 10000;
+            border-bottom: 2px solid #3a3a45;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .nav-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            color: #b0b0b0;
+            background: #2b2b36;
+        }
+        .nav-btn.active {
+            color: white;
+            background: linear-gradient(135deg, #9b30b0 0%, #6e2590 100%);
+            box-shadow: 0 4px 15px rgba(155, 48, 176, 0.4);
+        }
+
+        /* --- Global Reset & Switching Logic --- */
+        body { margin: 0; padding: 0; transition: background 0.3s ease; min-height: 100vh; }
+        .page-container { display: none !important; width: 100%; }
+        .page-container.active { display: flex !important; }
         
-        :root {
-            /* Branding Colors based on your image */
+        /* --- Scoped Styles for Umzugsliste (Termin.html) --- */
+        body.mode-termin {
+            background-color: #121212;
+            background-image: linear-gradient(rgba(18, 18, 18, 0.9), rgba(18, 18, 18, 0.9)), 
+                              url('https://www.transparenttextures.com/patterns/dark-matter.png');
+        }
+        #termin-page {
             --brand-purple: #8e2de2; 
             --brand-gradient: linear-gradient(135deg, #9b30b0 0%, #6e2590 100%);
-            
             --bg-dark: #121212;
             --card-bg: #1e1e24;
             --input-bg: #2b2b36;
             --input-text: #ffffff;
             --text-label: #b0b0b0;
             --border-color: #3a3a45;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-dark);
-            /* Subtle background pattern */
-            background-image: linear-gradient(rgba(18, 18, 18, 0.9), rgba(18, 18, 18, 0.9)), 
-                              url('https://www.transparenttextures.com/patterns/dark-matter.png');
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
             color: white;
             padding: 20px;
+            justify-content: center;
         }
-
-        .container {
+        #termin-page .container {
             background: var(--card-bg);
             border-radius: 12px;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
             width: 100%;
             max-width: 900px; 
             border: 1px solid var(--border-color);
-            overflow: hidden; /* Clips the header */
+            overflow: hidden;
         }
+        #termin-page .brand-header { background: var(--brand-gradient); padding: 2rem; text-align: center; margin-bottom: 2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        #termin-page .brand-logo { font-family: 'Varela Round', sans-serif; color: white; font-size: 3rem; letter-spacing: -1px; text-decoration: none; display: inline-block; }
+        #termin-page form { padding: 0 2.5rem 2.5rem 2.5rem; }
+        #termin-page .form-group { margin-bottom: 1.5rem; }
+        #termin-page label { display: block; margin-bottom: 0.6rem; color: var(--text-label); font-size: 0.9rem; font-weight: 600; }
+        #termin-page input[type="text"], #termin-page select, #termin-page textarea { width: 100%; padding: 14px 16px; background-color: var(--input-bg); border: 1px solid var(--border-color); border-radius: 6px; color: var(--input-text); font-size: 1rem; outline: none; transition: all 0.3s ease; appearance: none; }
+        #termin-page .select-wrapper { position: relative; }
+        #termin-page .select-wrapper::after { content: '▼'; font-size: 0.7rem; color: var(--text-label); position: absolute; right: 15px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+        #termin-page input:focus, #termin-page select:focus, #termin-page textarea:focus { border-color: #9b30b0; background-color: #32323e; box-shadow: 0 0 0 4px rgba(155, 48, 176, 0.15); }
+        #termin-page textarea { resize: vertical; min-height: 120px; font-family: inherit; }
+        #termin-page textarea.address-box { min-height: 70px; height: 90px; }
+        #termin-page .split-container { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 30px; border-top: 2px solid var(--border-color); border-bottom: 2px solid var(--border-color); padding: 30px 0; }
+        #termin-page .column-header { text-transform: uppercase; letter-spacing: 2px; color: #bd68d4; margin-bottom: 20px; font-weight: 800; font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        #termin-page .multi-input-row { display: flex; gap: 15px; }
+        #termin-page .multi-input-row .select-wrapper { flex: 1; }
+        #termin-page button { width: 100%; padding: 16px; margin-top: 15px; background: var(--brand-gradient); color: white; border: none; border-radius: 6px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; display: flex; justify-content: center; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        #termin-page button:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(155, 48, 176, 0.4); }
 
-        /* --- Branding Header --- */
-        .brand-header {
-            background: var(--brand-gradient);
-            padding: 2rem;
-            text-align: center;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        /* Style für den Reset-Button oben */
+        #termin-page .reset-header-btn {
+            width: auto;
+            padding: 6px 14px;
+            margin: 10px auto 0;
+            font-size: 0.75rem;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            opacity: 0.8;
         }
+        #termin-page .reset-header-btn:hover { background: rgba(255, 255, 255, 0.25); opacity: 1; transform: none; box-shadow: none; }
 
-        .brand-logo {
-            font-family: 'Varela Round', sans-serif;
-            color: white;
-            font-size: 3rem;
-            letter-spacing: -1px;
-            text-decoration: none;
-            display: inline-block;
-        }
-        
-        /* Mimic the logo icon above the 'v' or just simple text */
-        .brand-logo span {
-            font-weight: normal;
-        }
-
-        form {
-            padding: 0 2.5rem 2.5rem 2.5rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.6rem;
-            color: var(--text-label);
-            font-size: 0.9rem;
+        /* Style für den Reset-Button im Rechner */
+        #rechner-page .reset-rechner-btn {
+            width: auto;
+            padding: 6px 14px;
+            margin-top: 10px;
+            background: #fff;
+            color: var(--secondary);
+            border: 1px solid var(--border);
+            font-size: 0.75rem;
             font-weight: 600;
         }
+        #rechner-page .reset-rechner-btn:hover { background: #f9fafb; border-color: var(--secondary); transform: none; box-shadow: none; }
 
-        input[type="text"],
-        select,
-        textarea {
-            width: 100%;
-            padding: 14px 16px;
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: var(--input-text);
-            font-size: 1rem;
-            outline: none;
-            transition: all 0.3s ease;
-            appearance: none;
-        }
-        
-        /* Custom Arrow for Selects */
-        .select-wrapper {
-            position: relative;
-        }
-        .select-wrapper::after {
-            content: '▼';
-            font-size: 0.7rem;
-            color: var(--text-label);
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            pointer-events: none;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            border-color: #9b30b0;
-            background-color: #32323e;
-            box-shadow: 0 0 0 4px rgba(155, 48, 176, 0.15);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 120px;
-            font-family: inherit;
-        }
-
-        textarea.address-box {
-            min-height: 70px;
-            height: 90px;
-        }
-
-        /* Two Column Layout */
-        .split-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            margin-bottom: 30px;
-            border-top: 2px solid var(--border-color);
-            border-bottom: 2px solid var(--border-color);
-            padding: 30px 0;
-        }
-
-        .column-header {
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #bd68d4; /* Lighter purple for headers */
-            margin-bottom: 20px;
-            font-weight: 800;
-            font-size: 1.1rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-        }
-
-        /* Flex row for Aufzug fields */
-        .multi-input-row {
-            display: flex;
-            gap: 15px;
-        }
-        .multi-input-row .select-wrapper {
-            flex: 1;
-        }
-        
-        button {
-            width: 100%;
-            padding: 16px;
-            margin-top: 15px;
-            background: var(--brand-gradient);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            display: flex;
-            justify-content: center;
+        /* --- Scoped Styles for Rechner (Rechner.html) --- */
+        body.mode-rechner { background-color: #f3f4f6; color: #1f2937; }
+        #rechner-page {
+            display: none;
+            flex-direction: column;
             align-items: center;
-            gap: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            --primary: #27ae60; 
+            --primary-dark: #219150;
+            --secondary: #4b5563;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+            --border: #d1d5db;
+            --disabled: #e5e7eb;
+            padding: 20px;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(155, 48, 176, 0.4);
+        #rechner-page.active {
+            display: block !important;
         }
+        
+        #rechner-page .main-container { max-width: 1000px; margin: 0 auto; }
+        #rechner-page .header { text-align: center; margin-bottom: 30px; }
+        #rechner-page .header h1 { color: var(--primary); font-size: 2.2rem; margin-bottom: 5px; }
+        #rechner-page .calc-card { background: var(--card); padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border-top: 6px solid var(--primary); margin-bottom: 40px; }
+        #rechner-page .switch-container { display: flex; align-items: center; margin-bottom: 20px; gap: 10px; background: #f9fafb; padding: 10px; border-radius: 8px; width: fit-content; }
+        #rechner-page .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+        #rechner-page .switch input { opacity: 0; width: 0; height: 0; }
+        #rechner-page .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
+        #rechner-page .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        #rechner-page input:checked + .slider { background-color: var(--primary); }
+        #rechner-page input:checked + .slider:before { transform: translateX(26px); }
+        #rechner-page .input-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        #rechner-page label { display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; color: var(--secondary); }
+        #rechner-page input[type="number"] { width: 100%; padding: 12px 15px; border: 2px solid var(--border); border-radius: 8px; font-size: 1rem; box-sizing: border-box; transition: all 0.2s; }
+        #rechner-page input[type="number"]:focus { outline: none; border-color: var(--primary); }
+        #rechner-page input[type="number"]:disabled { background-color: var(--disabled); border-color: #d1d5db; color: #9ca3af; cursor: not-allowed; }
+        #rechner-page button { width: 100%; background-color: var(--primary); color: white; padding: 18px; border: none; border-radius: 8px; font-size: 1.2rem; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+        #rechner-page button:hover { background-color: var(--primary-dark); }
+        #rechner-page #result-display { margin-top: 30px; padding: 25px; background: #f0fff4; border: 1px solid #c6f6d5; border-radius: 10px; display: none; }
+        #rechner-page .result-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        #rechner-page .result-item { display: flex; flex-direction: column; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
+        #rechner-page .result-label { font-size: 0.85rem; color: #555; text-transform: uppercase; font-weight: 700; }
+        #rechner-page .result-value { font-size: 1.2rem; font-weight: 800; color: #2d3748; margin-top: 4px; }
+        #rechner-page .calculation-detail { font-size: 0.9rem; color: #666; font-weight: 400; font-style: italic; }
+        #rechner-page .total-row { margin-top: 10px; padding-top: 15px; border-top: 2px solid var(--primary) !important; }
+        #rechner-page .total-value { font-size: 1.8rem; color: var(--primary); }
+        #rechner-page .section-title { color: var(--secondary); font-size: 1.3rem; border-left: 5px solid var(--primary); padding-left: 15px; margin: 40px 0 20px; }
+        #rechner-page .table-wrapper { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; overflow-x: auto; }
+        #rechner-page table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        #rechner-page th { background: #f9fafb; padding: 12px 15px; text-align: left; border-bottom: 2px solid #edf2f7; color: var(--secondary); }
+        #rechner-page td { padding: 12px 15px; border-bottom: 1px solid #edf2f7; }
+        #rechner-page .highlight-col { background-color: #f0fff4; font-weight: bold; text-align: center; }
 
         @media (max-width: 768px) {
-            .split-container {
-                grid-template-columns: 1fr;
-                gap: 40px;
-            }
-            .brand-logo {
-                font-size: 2.5rem;
-            }
-            form {
-                padding: 0 1.5rem 1.5rem 1.5rem;
-            }
+            #termin-page .split-container { grid-template-columns: 1fr; gap: 40px; }
+            #termin-page .brand-logo { font-size: 2.5rem; }
+            #termin-page form { padding: 0 1.5rem 1.5rem 1.5rem; }
         }
     </style>
 </head>
-<body>
+<body class="mode-termin">
 
-    <div class="container">
-        <!-- Branding Header -->
-        <div class="brand-header">
-            <div class="brand-logo">movedirect</div>
+    <!-- Main Switcher Button at the Top -->
+    <nav id="app-nav">
+        <button id="nav-btn-termin" class="nav-btn active" onclick="showPage('termin')">Umzugsliste</button>
+        <button id="nav-btn-rechner" class="nav-btn" onclick="showPage('rechner')">Rechner</button>
+    </nav>
+
+    <!-- SECTION: UMZUNGSLISTE (Termin.html) -->
+    <div id="termin-page" class="page-container active">
+        <div class="container">
+            <div class="brand-header">
+                <div class="brand-logo">movedirect</div>
+                <button type="button" class="reset-header-btn" onclick="resetTerminForm()">Seite zurücksetzen / Reset</button>
+            </div>
+            <form id="moveForm">
+                <div class="form-group">
+                    <label for="customerName">Name Kunde</label>
+                    <input type="text" id="customerName" placeholder="Vorname Nachname" required>
+                </div>
+                <div class="form-group">
+                    <label for="moveReason">Art / Grund</label>
+                    <div class="select-wrapper">
+                        <select id="moveReason">
+                            <option value="Umzugsgut" selected>Umzugsgut</option>
+                            <option value="Warenausfuhr">Warenausfuhr</option>
+                            <option value="Ferienhaus">Ferienhaus</option>
+                            <option value="Erbschaft">Erbschaft</option>
+                            <option value="Sonstiges">Sonstiges</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="split-container">
+                    <div class="column">
+                        <div class="column-header">Auszug</div>
+                        <div class="form-group">
+                            <label>Objekttyp</label>
+                            <div class="select-wrapper">
+                                <select id="az_objekt">
+                                    <option value="Wohnung" selected>Wohnung</option>
+                                    <option value="Haus">Haus</option>
+                                    <option value="Lager">Lager</option>
+                                    <option value="Büro">Büro</option>
+                                    <option value="Garage">Garage</option>
+                                    <option value="Zweifamilienhaus">Zweifamilienhaus</option>
+                                    <option value="Reihenhaus">Reihenhaus</option>
+                                    <option value="WG-Zimmer">WG-Zimmer</option>
+                                    <option value="Maisonette">Maisonette</option>
+                                    <option value="Sonstiges">Sonstiges</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Stockwerk</label>
+                            <div class="select-wrapper">
+                                <select id="az_stockwerk">
+                                    <option value="" disabled selected>Bitte wählen</option>
+                                    <script>for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}. Etage</option>`);</script>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Trageweg</label>
+                            <div class="select-wrapper">
+                                <select id="az_trageweg">
+                                    <option value="0-10 m">0-10 m</option>
+                                    <option value="10-20 m">10-20 m</option>
+                                    <option value="20-30 m">20-30 m</option>
+                                    <option value="30-40 m">30-40 m</option>
+                                    <option value="40-50 m">40-50 m</option>
+                                    <option value="50-60 m">50-60 m</option>
+                                    <option value="60-70 m">60-70 m</option>
+                                    <option value="70-80 m">70-80 m</option>
+                                    <option value="80-90 m">80-90 m</option>
+                                    <option value="90-100 m">90-100 m</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Aufzug (Vorhanden? | Personen)</label>
+                            <div class="multi-input-row">
+                                <div class="select-wrapper"><select id="az_aufzug_yn"><option value="Nein">Nein</option><option value="Ja">Ja</option></select></div>
+                                <div class="select-wrapper"><select id="az_aufzug_cap"><option value="" disabled selected>0-10</option><script>for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}</option>`);</script></select></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Halteverbotszone</label>
+                            <div class="select-wrapper"><select id="az_hvz"><option value="Nein">Nein</option><option value="Ja">Ja</option><option value="Durch den Kunden">Durch den Kunden</option></select></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Aussenlift</label>
+                            <div class="select-wrapper"><select id="az_aussenlift"><option value="Nein">Nein</option><option value="Ja">Ja</option></select></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Adresse</label>
+                            <textarea id="az_adresse" class="address-box" placeholder="Straße, Nr, PLZ, Ort"></textarea>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="column-header">Einzug</div>
+                        <div class="form-group">
+                            <label>Objekttyp</label>
+                            <div class="select-wrapper">
+                                <select id="ez_objekt">
+                                    <option value="Wohnung" selected>Wohnung</option>
+                                    <option value="Haus">Haus</option>
+                                    <option value="Lager">Lager</option>
+                                    <option value="Büro">Büro</option>
+                                    <option value="Garage">Garage</option>
+                                    <option value="Zweifamilienhaus">Zweifamilienhaus</option>
+                                    <option value="Reihenhaus">Reihenhaus</option>
+                                    <option value="WG-Zimmer">WG-Zimmer</option>
+                                    <option value="Maisonette">Maisonette</option>
+                                    <option value="Sonstiges">Sonstiges</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Stockwerk</label>
+                            <div class="select-wrapper">
+                                <select id="ez_stockwerk">
+                                    <option value="" disabled selected>Bitte wählen</option>
+                                    <script>for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}. Etage</option>`);</script>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Trageweg</label>
+                            <div class="select-wrapper">
+                                <select id="ez_trageweg">
+                                    <option value="0-10 m">0-10 m</option>
+                                    <option value="10-20 m">10-20 m</option>
+                                    <option value="20-30 m">20-30 m</option>
+                                    <option value="30-40 m">30-40 m</option>
+                                    <option value="40-50 m">40-50 m</option>
+                                    <option value="50-60 m">50-60 m</option>
+                                    <option value="60-70 m">60-70 m</option>
+                                    <option value="70-80 m">70-80 m</option>
+                                    <option value="80-90 m">80-90 m</option>
+                                    <option value="90-100 m">90-100 m</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Aufzug (Vorhanden? | Personen)</label>
+                            <div class="multi-input-row">
+                                <div class="select-wrapper"><select id="ez_aufzug_yn"><option value="Nein">Nein</option><option value="Ja">Ja</option></select></div>
+                                <div class="select-wrapper"><select id="ez_aufzug_cap"><option value="" disabled selected>0-10</option><script>for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}</option>`);</script></select></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Halteverbotszone</label>
+                            <div class="select-wrapper"><select id="ez_hvz"><option value="Nein">Nein</option><option value="Ja">Ja</option><option value="Durch den Kunden">Durch den Kunden</option></select></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Aussenlift</label>
+                            <div class="select-wrapper"><select id="ez_aussenlift"><option value="Nein">Nein</option><option value="Ja">Ja</option></select></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Adresse</label>
+                            <textarea id="ez_adresse" class="address-box" placeholder="Straße, Nr, PLZ, Ort"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group"><label for="inventar">Inventar</label><textarea id="inventar" placeholder="Liste der Möbelstücke..."></textarea></div>
+                <div class="form-group"><label for="description">Beschreibung</label><textarea id="description" placeholder="Weitere Details zum Umzug, Besonderheiten..."></textarea></div>
+                <div class="form-group"><label for="internalNote">Interne Notiz</label><textarea id="internalNote" placeholder="Interne Bemerkungen, Preise, Team-Infos..."></textarea></div>
+                <div class="form-group"><label for="orgProposal">Organisationsvorschlag</label><textarea id="orgProposal" placeholder="Vorschlag zur Organisation des Umzugs..."></textarea></div>
+                <div class="form-group"><label for="serviceInfo">Service</label><textarea id="serviceInfo" placeholder="Zusatzleistungen, Verpackungsservice etc..."></textarea></div>
+                <button type="submit" id="downloadBtn">Download .txt <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 15V3M12 15L8 11M12 15L16 11M2 17L2.62 19.48C2.84 20.36 3.06 20.8 3.52 21.15C3.98 21.5 4.54 21.5 5.66 21.5H18.34C19.46 21.5 20.02 21.5 20.48 21.15C20.94 20.8 21.16 20.36 21.38 19.48L22 17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </form>
         </div>
+    </div>
 
-        <form id="moveForm">
-            <!-- Customer Name -->
-            <div class="form-group">
-                <label for="customerName">Name Kunde</label>
-                <input type="text" id="customerName" placeholder="Vorname Nachname" required>
+    <!-- SECTION: RECHNER (Rechner.html) -->
+    <div id="rechner-page" class="page-container">
+        <div class="main-container">
+            <div class="header">
+                <h1>Umzugsangebot Rechner</h1>
+                <p>Preiskalkulation basierend auf Fahrzeugkapazität</p>
+                <button type="button" class="reset-rechner-btn" onclick="resetRechnerForm()">Rechner zurücksetzen / Reset</button>
             </div>
-
-            <!-- Art / Grund -->
-            <div class="form-group">
-                <label for="moveReason">Art / Grund</label>
-                <div class="select-wrapper">
-                    <select id="moveReason">
-                        <option value="Umzugsgut" selected>Umzugsgut</option>
-                        <option value="Warenausfuhr">Warenausfuhr</option>
-                        <option value="Ferienhaus">Ferienhaus</option>
-                        <option value="Erbschaft">Erbschaft</option>
-                        <option value="Sonstiges">Sonstiges</option>
-                    </select>
+            <div class="calc-card">
+                <div class="switch-container">
+                    <label class="switch"><input type="checkbox" id="transportOnly" onchange="toggleTransportOnly()"><span class="slider"></span></label>
+                    <span style="font-weight: bold; font-size: 0.9rem; color: var(--secondary);">Transport only (Kein m³ Preis)</span>
                 </div>
-            </div>
-
-            <!-- Split Section -->
-            <div class="split-container">
-                
-                <!-- Left: AUSZUG -->
-                <div class="column">
-                    <div class="column-header">Auszug</div>
-
-                    <!-- NEU: Objekttyp Auszug -->
-                    <div class="form-group">
-                        <label>Objekttyp</label>
-                        <div class="select-wrapper">
-                            <select id="az_objekt">
-                                <option value="Wohnung" selected>Wohnung</option>
-                                <option value="Haus">Haus</option>
-                                <option value="Lager">Lager</option>
-                                <option value="Büro">Büro</option>
-                                <option value="Garage">Garage</option>
-                                <option value="Zweifamilienhaus">Zweifamilienhaus</option>
-                                <option value="Reihenhaus">Reihenhaus</option>
-                                <option value="WG-Zimmer">WG-Zimmer</option>
-                                <option value="Maisonette">Maisonette</option>
-                                <option value="Sonstiges">Sonstiges</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Stockwerk (0-10) -->
-                    <div class="form-group">
-                        <label>Stockwerk</label>
-                        <div class="select-wrapper">
-                            <select id="az_stockwerk">
-                                <option value="" disabled selected>Bitte wählen</option>
-                                <script>
-                                    for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}. Etage</option>`);
-                                </script>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Trageweg (Ranges) -->
-                    <div class="form-group">
-                        <label>Trageweg</label>
-                        <div class="select-wrapper">
-                            <select id="az_trageweg">
-                                <option value="0-10 m">0-10 m</option>
-                                <option value="10-20 m">10-20 m</option>
-                                <option value="20-30 m">20-30 m</option>
-                                <option value="30-40 m">30-40 m</option>
-                                <option value="40-50 m">40-50 m</option>
-                                <option value="50-60 m">50-60 m</option>
-                                <option value="60-70 m">60-70 m</option>
-                                <option value="70-80 m">70-80 m</option>
-                                <option value="80-90 m">80-90 m</option>
-                                <option value="90-100 m">90-100 m</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Aufzug (Yes/No + 0-10) -->
-                    <div class="form-group">
-                        <label>Aufzug (Vorhanden? | Personen)</label>
-                        <div class="multi-input-row">
-                            <div class="select-wrapper">
-                                <select id="az_aufzug_yn">
-                                    <option value="Nein">Nein</option>
-                                    <option value="Ja">Ja</option>
-                                </select>
-                            </div>
-                            <div class="select-wrapper">
-                                <select id="az_aufzug_cap">
-                                    <option value="" disabled selected>0-10</option>
-                                    <script>for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}</option>`);</script>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Halteverbotszone -->
-                    <div class="form-group">
-                        <label>Halteverbotszone</label>
-                        <div class="select-wrapper">
-                            <select id="az_hvz">
-                                <option value="Nein">Nein</option>
-                                <option value="Ja">Ja</option>
-                                <option value="Durch den Kunden">Durch den Kunden</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Aussenlift -->
-                    <div class="form-group">
-                        <label>Aussenlift</label>
-                        <div class="select-wrapper">
-                            <select id="az_aussenlift">
-                                <option value="Nein">Nein</option>
-                                <option value="Ja">Ja</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Adresse (Resizable) -->
-                    <div class="form-group">
-                        <label>Adresse</label>
-                        <textarea id="az_adresse" class="address-box" placeholder="Straße, Nr, PLZ, Ort"></textarea>
-                    </div>
+                <div class="input-row">
+                    <div><label for="volume">Volumen (m³)</label><input type="number" id="volume" placeholder="z.B. 22" step="0.1"></div>
+                    <div><label for="distance">Distanz (KM)</label><input type="number" id="distance" placeholder="z.B. 370"></div>
+                    <div><label for="discount">Rabatt (%)</label><input type="number" id="discount" placeholder="z.B. 5" step="0.1"></div>
+                    <div><label for="volPrice" id="volPriceLabel">Preis pro m³ (CHF) *</label><input type="number" id="volPrice" placeholder="z.B. 75" step="0.01"></div>
                 </div>
-
-                <!-- Right: EINZUG -->
-                <div class="column">
-                    <div class="column-header">Einzug</div>
-
-                    <!-- NEU: Objekttyp Einzug -->
-                    <div class="form-group">
-                        <label>Objekttyp</label>
-                        <div class="select-wrapper">
-                            <select id="ez_objekt">
-                                <option value="Wohnung" selected>Wohnung</option>
-                                <option value="Haus">Haus</option>
-                                <option value="Lager">Lager</option>
-                                <option value="Büro">Büro</option>
-                                <option value="Garage">Garage</option>
-                                <option value="Zweifamilienhaus">Zweifamilienhaus</option>
-                                <option value="Reihenhaus">Reihenhaus</option>
-                                <option value="WG-Zimmer">WG-Zimmer</option>
-                                <option value="Maisonette">Maisonette</option>
-                                <option value="Sonstiges">Sonstiges</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Stockwerk (0-10) -->
-                    <div class="form-group">
-                        <label>Stockwerk</label>
-                        <div class="select-wrapper">
-                            <select id="ez_stockwerk">
-                                <option value="" disabled selected>Bitte wählen</option>
-                                <script>
-                                    for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}. Etage</option>`);
-                                </script>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Trageweg (Ranges) -->
-                    <div class="form-group">
-                        <label>Trageweg</label>
-                        <div class="select-wrapper">
-                            <select id="ez_trageweg">
-                                <option value="0-10 m">0-10 m</option>
-                                <option value="10-20 m">10-20 m</option>
-                                <option value="20-30 m">20-30 m</option>
-                                <option value="30-40 m">30-40 m</option>
-                                <option value="40-50 m">40-50 m</option>
-                                <option value="50-60 m">50-60 m</option>
-                                <option value="60-70 m">60-70 m</option>
-                                <option value="70-80 m">70-80 m</option>
-                                <option value="80-90 m">80-90 m</option>
-                                <option value="90-100 m">90-100 m</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Aufzug (Yes/No + 0-10) -->
-                    <div class="form-group">
-                        <label>Aufzug (Vorhanden? | Personen)</label>
-                        <div class="multi-input-row">
-                            <div class="select-wrapper">
-                                <select id="ez_aufzug_yn">
-                                    <option value="Nein">Nein</option>
-                                    <option value="Ja">Ja</option>
-                                </select>
-                            </div>
-                            <div class="select-wrapper">
-                                <select id="ez_aufzug_cap">
-                                    <option value="" disabled selected>0-10</option>
-                                    <script>for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}</option>`);</script>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Halteverbotszone -->
-                    <div class="form-group">
-                        <label>Halteverbotszone</label>
-                        <div class="select-wrapper">
-                            <select id="ez_hvz">
-                                <option value="Nein">Nein</option>
-                                <option value="Ja">Ja</option>
-                                <option value="Durch den Kunden">Durch den Kunden</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Aussenlift -->
-                    <div class="form-group">
-                        <label>Aussenlift</label>
-                        <div class="select-wrapper">
-                            <select id="ez_aussenlift">
-                                <option value="Nein">Nein</option>
-                                <option value="Ja">Ja</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Adresse (Resizable) -->
-                    <div class="form-group">
-                        <label>Adresse</label>
-                        <textarea id="ez_adresse" class="address-box" placeholder="Straße, Nr, PLZ, Ort"></textarea>
+                <button onclick="calculateQuote()">Angebot berechnen</button>
+                <div id="result-display">
+                    <div class="result-grid">
+                        <div class="result-item"><span class="result-label">Empfohlenes Fahrzeug</span><span id="res-truck" class="result-value">--</span></div>
+                        <div class="result-item" id="res-cargo-row"><span class="result-label">Frachtpreis (Volumen)</span><span id="res-cargo-cost" class="result-value">--</span></div>
+                        <div class="result-item"><span class="result-label">Transportpreis (KM-Satz)</span><span id="res-dist-cost" class="result-value">--</span></div>
+                        <div class="result-item" id="res-discount-row" style="display: none; color: #e53e3e;"><span class="result-label">Rabatt Abzug</span><span id="res-discount-amount" class="result-value">--</span></div>
+                        <div class="result-item total-row"><span class="result-label">Gesamtbetrag</span><span id="res-total" class="result-value total-value">--</span></div>
                     </div>
                 </div>
             </div>
-
-            <!-- Inventar -->
-            <div class="form-group">
-                <label for="inventar">Inventar</label>
-                <textarea id="inventar" placeholder="Liste der Möbelstücke..."></textarea>
-            </div>
-
-            <!-- Description -->
-            <div class="form-group">
-                <label for="description">Beschreibung</label>
-                <textarea id="description" placeholder="Weitere Details zum Umzug, Besonderheiten..."></textarea>
-            </div>
-
-            <!-- Interne Notiz -->
-            <div class="form-group">
-                <label for="internalNote">Interne Notiz</label>
-                <textarea id="internalNote" placeholder="Interne Bemerkungen, Preise, Team-Infos..."></textarea>
-            </div>
-
-            <!-- Organisationsvorschlag -->
-            <div class="form-group">
-                <label for="orgProposal">Organisationsvorschlag</label>
-                <textarea id="orgProposal" placeholder="Vorschlag zur Organisation des Umzugs..."></textarea>
-            </div>
-
-            <!-- Service -->
-            <div class="form-group">
-                <label for="serviceInfo">Service</label>
-                <textarea id="serviceInfo" placeholder="Zusatzleistungen, Verpackungsservice etc..."></textarea>
-            </div>
-
-            <!-- Download Button -->
-            <button type="submit" id="downloadBtn">
-                Download .txt 
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 15V3M12 15L8 11M12 15L16 11M2 17L2.62 19.48C2.84 20.36 3.06 20.8 3.52 21.15C3.98 21.5 4.54 21.5 5.66 21.5H18.34C19.46 21.5 20.02 21.5 20.48 21.15C20.94 20.8 21.16 20.36 21.38 19.48L22 17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </button>
-        </form>
+            <h2 class="section-title">Referenz: Fahrzeugflotte</h2>
+            <div class="table-wrapper"><table><thead><tr><th>Fahrzeug</th><th>Max. Kapazität</th><th>Nutzlast</th></tr></thead><tbody id="truck-body"></tbody></table></div>
+            <h2 class="section-title">Referenz: Preismatrix</h2>
+            <div class="table-wrapper"><table><thead id="rate-head"></thead><tbody id="rate-body"></tbody></table></div>
+        </div>
     </div>
 
     <script>
+        /* --- App Switcher Logic --- */
+        function showPage(pageId) {
+            document.querySelectorAll('.page-container').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(pageId + '-page').classList.add('active');
+            document.getElementById('nav-btn-' + pageId).classList.add('active');
+            document.body.className = 'mode-' + pageId;
+        }
+
+        /* --- Umzugsliste (Termin.html) Logic --- */
+        function resetTerminForm() {
+            if (confirm("Möchten Sie alle Felder der Umzugsliste wirklich löschen und zurücksetzen?")) {
+                document.getElementById('moveForm').reset();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function resetRechnerForm() {
+            if (confirm("Möchten Sie alle Eingaben im Rechner wirklich löschen?")) {
+                document.getElementById('volume').value = '';
+                document.getElementById('distance').value = '';
+                document.getElementById('discount').value = '';
+                document.getElementById('volPrice').value = '';
+                document.getElementById('transportOnly').checked = false;
+                toggleTransportOnly();
+                document.getElementById('result-display').style.display = 'none';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
         document.getElementById('moveForm').addEventListener('submit', function(e) {
             e.preventDefault();
-
-            // Helper to get value securely
-            const getVal = (id) => {
-                const el = document.getElementById(id);
-                return el ? el.value : '-';
-            };
-
-            // 1. Gather Data
+            const getVal = (id) => { const el = document.getElementById(id); return el ? el.value : '-'; };
             const customer = document.getElementById('customerName').value;
             const reason = document.getElementById('moveReason').value;
             const inventar = document.getElementById('inventar').value;
@@ -509,92 +431,84 @@
             const internal = document.getElementById('internalNote').value;
             const orgProposal = document.getElementById('orgProposal').value;
             const serviceInfo = document.getElementById('serviceInfo').value;
-
-            // Auszug Data
-            const az_obj = getVal('az_objekt');
-            const az_st = getVal('az_stockwerk');
-            const az_tw = getVal('az_trageweg');
-            const az_auf_yn = getVal('az_aufzug_yn');
-            const az_auf_cap = getVal('az_aufzug_cap');
-            const az_hvz = getVal('az_hvz');
-            const az_al = getVal('az_aussenlift');
-            const az_adr = getVal('az_adresse');
-
-            // Einzug Data
-            const ez_obj = getVal('ez_objekt');
-            const ez_st = getVal('ez_stockwerk');
-            const ez_tw = getVal('ez_trageweg');
-            const ez_auf_yn = getVal('ez_aufzug_yn');
-            const ez_auf_cap = getVal('ez_aufzug_cap');
-            const ez_hvz = getVal('ez_hvz');
-            const ez_al = getVal('ez_aussenlift');
-            const ez_adr = getVal('ez_adresse');
-
-            // 2. Format Text File
-            const textContent = 
-`KUNDE: ${customer}
-ART:   ${reason}
-==========================================
-AUSZUG (Start)
-==========================================
-Objekttyp:        ${az_obj}
-Adresse:          ${az_adr}
-Stockwerk:        ${az_st}. Etage
-Trageweg:         ${az_tw}
-Aufzug:           ${az_auf_yn} (Personen/Kapazität: ${az_auf_cap})
-Halteverbotszone: ${az_hvz}
-Aussenlift:       ${az_al}
-
-==========================================
-EINZUG (Ziel)
-==========================================
-Objekttyp:        ${ez_obj}
-Adresse:          ${ez_adr}
-Stockwerk:        ${ez_st}. Etage
-Trageweg:         ${ez_tw}
-Aufzug:           ${ez_auf_yn} (Personen/Kapazität: ${ez_auf_cap})
-Halteverbotszone: ${ez_hvz}
-Aussenlift:       ${ez_al}
-
-==========================================
-INVENTAR
-==========================================
-${inventar}
-
-==========================================
-BESCHREIBUNG
-==========================================
-${desc}
-
-==========================================
-INTERNE NOTIZ
-==========================================
-${internal}
-
-==========================================
-ORGANISATIONSVORSCHLAG
-==========================================
-${orgProposal}
-
-==========================================
-SERVICE
-==========================================
-${serviceInfo}
-`;
-
-            // 3. Create and Download File
+            const az_obj = getVal('az_objekt'), az_st = getVal('az_stockwerk'), az_tw = getVal('az_trageweg'), az_auf_yn = getVal('az_aufzug_yn'), az_auf_cap = getVal('az_aufzug_cap'), az_hvz = getVal('az_hvz'), az_al = getVal('az_aussenlift'), az_adr = getVal('az_adresse');
+            const ez_obj = getVal('ez_objekt'), ez_st = getVal('ez_stockwerk'), ez_tw = getVal('ez_trageweg'), ez_auf_yn = getVal('ez_aufzug_yn'), ez_auf_cap = getVal('ez_aufzug_cap'), ez_hvz = getVal('ez_hvz'), ez_al = getVal('ez_aussenlift'), ez_adr = getVal('ez_adresse');
+            const textContent = `KUNDE: ${customer}\nART:   ${reason}\n==========================================\nAUSZUG (Start)\n==========================================\nObjekttyp:        ${az_obj}\nAdresse:          ${az_adr}\nStockwerk:        ${az_st}. Etage\nTrageweg:         ${az_tw}\nAufzug:           ${az_auf_yn} (Personen/Kapazität: ${az_auf_cap})\nHalteverbotszone: ${az_hvz}\nAussenlift:       ${az_al}\n\n==========================================\nEINZUG (Ziel)\n==========================================\nObjekttyp:        ${ez_obj}\nAdresse:          ${ez_adr}\nStockwerk:        ${ez_st}. Etage\nTrageweg:         ${ez_tw}\nAufzug:           ${ez_auf_yn} (Personen/Kapazität: ${ez_auf_cap})\nHalteverbotszone: ${ez_hvz}\nAussenlift:       ${ez_al}\n\n==========================================\nINVENTAR\n==========================================\n${inventar}\n\n==========================================\nBESCHREIBUNG\n==========================================\n${desc}\n\n==========================================\nINTERNE NOTIZ\n==========================================\n${internal}\n\n==========================================\nORGANISATIONSVORSCHLAG\n==========================================\n${orgProposal}\n\n==========================================\nSERVICE\n==========================================\n${serviceInfo}\n`;
             const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
             const safeName = (customer.trim().replace(/[^a-z0-9äöüß]/gi, '_') || 'umzug') + '.txt';
-
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', safeName);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+            link.href = url; link.setAttribute('download', safeName); document.body.appendChild(link);
+            link.click(); document.body.removeChild(link); URL.revokeObjectURL(url);
         });
+
+        /* --- Rechner (Rechner.html) Logic --- */
+        const volThresholds = [9, 15, 21, 38, 41, 52];
+        const kmThresholds = [250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1050];
+        const truckFleet = [
+            { name: "Caddy", max: 1.5, payload: "400kg" }, { name: "Sprinter", max: 9, payload: "1100kg" },
+            { name: "LKW 3.5 to", max: 23, payload: "900kg" }, { name: "LKW 7.5 to", max: 35, payload: "2000kg" },
+            { name: "LKW 12 to", max: 45, payload: "5500kg" }, { name: "LKW 18 to", max: 48, payload: "9800kg" },
+            { name: "LKW 40 to", max: 90, payload: "25000kg" }
+        ];
+        const priceMatrix = [
+            [2.4, 2.88, 2.88, 4.32, 5.4, 5.94], [2.3, 2.76, 2.76, 4.14, 5.18, 5.69], [2.2, 2.64, 2.64, 3.96, 4.95, 5.45], [2, 2.4, 2.4, 3.6, 4.5, 4.95],
+            [1.9, 2.28, 2.28, 3.42, 4.28, 4.7], [1.8, 2.16, 2.16, 3.24, 4.05, 4.46], [1.8, 2.16, 2.16, 3.24, 4.05, 4.46], [1.8, 2.16, 2.16, 3.24, 4.05, 4.46],
+            [1.8, 2.16, 2.16, 3.24, 4.05, 4.46], [1.8, 2.16, 2.16, 3.24, 4.05, 4.46], [1.7, 2.04, 2.04, 3.06, 3.83, 4.21], [1.7, 2.04, 2.04, 3.06, 3.83, 4.21],
+            [1.9, 2.28, 2.28, 3.42, 4.28, 4.7], [1.9, 2.28, 2.28, 3.42, 4.28, 4.7], [1.9, 2.28, 2.28, 3.42, 4.28, 4.7], [1.95, 2.34, 2.34, 3.51, 4.39, 4.83],
+            [1.95, 2.34, 2.34, 3.51, 4.39, 4.83]
+        ];
+
+        window.addEventListener('load', () => {
+            const tb = document.getElementById('truck-body');
+            if(tb) truckFleet.forEach(t => tb.innerHTML += `<tr><td>${t.name}</td><td>bis ${t.max} m³</td><td>${t.payload}</td></tr>`);
+            const rh = document.getElementById('rate-head');
+            if(rh) {
+                let headHtml = '<tr><th>KM</th>';
+                volThresholds.forEach(v => headHtml += `<th class="highlight-col">${v} m³</th>`);
+                rh.innerHTML = headHtml + '</tr>';
+            }
+            const rb = document.getElementById('rate-body');
+            if(rb) {
+                kmThresholds.forEach((km, i) => {
+                    let row = `<tr><td><b>${km} KM</b></td>`;
+                    priceMatrix[i].forEach(p => row += `<td style="text-align:center">${p.toFixed(2)}</td>`);
+                    rb.innerHTML += row + '</tr>';
+                });
+            }
+        });
+
+        function toggleTransportOnly() {
+            const isTransportOnly = document.getElementById('transportOnly').checked;
+            const volPriceInput = document.getElementById('volPrice');
+            const volPriceLabel = document.getElementById('volPriceLabel');
+            if (isTransportOnly) { volPriceInput.value = ""; volPriceInput.disabled = true; volPriceLabel.innerText = "Preis pro m³ (Deaktiviert)"; volPriceLabel.style.color = "#9ca3af"; } 
+            else { volPriceInput.disabled = false; volPriceLabel.innerText = "Preis pro m³ (CHF) *"; volPriceLabel.style.color = "var(--secondary)"; }
+        }
+
+        function calculateQuote() {
+            const vol = parseFloat(document.getElementById('volume').value), dist = parseFloat(document.getElementById('distance').value), vPrice = parseFloat(document.getElementById('volPrice').value), discountPercent = parseFloat(document.getElementById('discount').value) || 0, isTransportOnly = document.getElementById('transportOnly').checked;
+            if (!vol || !dist) { alert("Bitte Volumen und Distanz eingeben."); return; }
+            if (!isTransportOnly && isNaN(vPrice)) { alert("Bitte geben Sie einen Preis pro m³ ein."); return; }
+            const selectedTruckObj = truckFleet.find(t => vol <= t.max);
+            const truck = selectedTruckObj ? selectedTruckObj.name : "Spezialanfrage";
+            let colIdx = volThresholds.findIndex(v => vol <= v);
+            if (colIdx === -1) colIdx = volThresholds.length - 1;
+            let rowIdx = 0;
+            for (let i = 0; i < kmThresholds.length; i++) { if (dist >= kmThresholds[i]) { rowIdx = i; } }
+            const kmRate = priceMatrix[rowIdx][colIdx];
+            const cargoCost = isTransportOnly ? 0 : (vol * vPrice), transportCost = dist * kmRate, subtotal = cargoCost + transportCost, discountAmount = subtotal * (discountPercent / 100), grandTotal = subtotal - discountAmount;
+            document.getElementById('res-truck').innerText = truck;
+            const cargoRow = document.getElementById('res-cargo-row');
+            if (isTransportOnly) { cargoRow.style.display = 'none'; } 
+            else { cargoRow.style.display = 'flex'; document.getElementById('res-cargo-cost').innerHTML = cargoCost.toLocaleString('de-DE', {minimumFractionDigits: 2}) + " CHF " + `<span class="calculation-detail">(${vol.toLocaleString('de-DE')} m³ × ${vPrice.toLocaleString('de-DE', {minimumFractionDigits: 2})} Preis)</span>`; }
+            document.getElementById('res-dist-cost').innerHTML = transportCost.toLocaleString('de-DE', {minimumFractionDigits: 2}) + " CHF " + `<span class="calculation-detail">(${dist.toLocaleString('de-DE')} km × ${kmRate.toFixed(2)} Satz)</span>`;
+            const discountRow = document.getElementById('res-discount-row');
+            if (discountPercent > 0) { discountRow.style.display = 'flex'; document.getElementById('res-discount-amount').innerHTML = "-" + discountAmount.toLocaleString('de-DE', {minimumFractionDigits: 2}) + " CHF " + `<span class="calculation-detail">(${discountPercent}% Rabatt auf ${subtotal.toLocaleString('de-DE', {minimumFractionDigits: 2})} CHF)</span>`; } 
+            else { discountRow.style.display = 'none'; }
+            document.getElementById('res-total').innerText = grandTotal.toLocaleString('de-DE', {minimumFractionDigits: 2}) + " CHF";
+            document.getElementById('result-display').style.display = 'block';
+        }
     </script>
 </body>
 </html>
